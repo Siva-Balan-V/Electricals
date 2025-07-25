@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Services | ALLWIN I POWER SYSTEM</title>
+  <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+  <style>
+    .service-card {
+      background: #f8f9fa;
+      border-radius: 1rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease;
+      overflow: hidden;
+      height: 100%;
+    }
+
+    .service-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .service-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .card-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-top: 0.5rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div th:replace="fragments/navbar :: navbar"></div>
+
+  <div class="container py-5">
+    <h2 class="text-center mb-5">Our Services</h2>
+    <div class="row g-4">
+
+      <!-- Service 1: Building Wiring -->
+      <div class="col-md-6 col-lg-3">
+        <div class="service-card p-3 d-flex flex-column">
+          <img th:src="@{/images/wiring.jpg}" alt="Building Wiring" class="service-image">
+          <div class="card-body text-center">
+            <h5 class="card-title">Building Wiring</h5>
+            <p>Expert electrical wiring for homes, offices, and industries.</p>
+            <form th:action="@{/cart/add}" method="post">
+              <input type="hidden" name="productName" value="Building Wiring">
+              <input type="hidden" name="price" value="3000">
+              <button class="btn btn-sm btn-outline-primary" type="submit">Add to Cart</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Service 2: Fan/Light Fitting -->
+      <div class="col-md-6 col-lg-3">
+        <div class="service-card p-3 d-flex flex-column">
+          <img th:src="@{/images/fan_installation.jpg}" alt="Fan Light Fitting" class="service-image">
+          <div class="card-body text-center">
+            <h5 class="card-title">Fan / Light Fitting</h5>
+            <p>Safe and professional installation for all electrical fittings.</p>
+            <form th:action="@{/cart/add}" method="post">
+              <input type="hidden" name="productName" value="Fan / Light Fitting">
+              <input type="hidden" name="price" value="800">
+              <button class="btn btn-sm btn-outline-primary" type="submit">Add to Cart</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Service 3: Inverter Installation -->
+      <div class="col-md-6 col-lg-3">
+        <div class="service-card p-3 d-flex flex-column">
+          <img th:src="@{/images/consultation.jpg}" alt="Inverter Installation" class="service-image">
+          <div class="card-body text-center">
+            <h5 class="card-title">Inverter Installation</h5>
+            <p>Complete inverter setup & testing at your location.</p>
+            <form th:action="@{/cart/add}" method="post">
+              <input type="hidden" name="productName" value="Inverter Installation">
+              <input type="hidden" name="price" value="1200">
+              <button class="btn btn-sm btn-outline-primary" type="submit">Add to Cart</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Service 4: Stabilizer Repair -->
+      <div class="col-md-6 col-lg-3">
+        <div class="service-card p-3 d-flex flex-column">
+          <img th:src="@{/images/ups_service.jpg}" alt="Stabilizer Repair" class="service-image">
+          <div class="card-body text-center">
+            <h5 class="card-title">Stabilizer Repair</h5>
+            <p>Fast repair services for all types of stabilizers.</p>
+            <form th:action="@{/cart/add}" method="post">
+              <input type="hidden" name="productName" value="Stabilizer Repair">
+              <input type="hidden" name="price" value="1000">
+              <button class="btn btn-sm btn-outline-primary" type="submit">Add to Cart</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div th:replace="fragments/footer :: footer"></div>
+  <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

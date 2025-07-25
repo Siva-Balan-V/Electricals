@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<h2>Your Cart</h2>
+
+<div th:if="${cartItems.size() == 0}">
+    <p>Your cart is empty.</p>
+</div>
+
+<table th:if="${cartItems.size() > 0}" border="1">
+    <tr>
+        <th>Product</th>
+        <th>Image</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Subtotal</th>
+        <th>Action</th>
+    </tr>
+    <tr th:each="item : ${cartItems}">
+        <td th:text="${item.product.name}">Product Name</td>
+        <td><img th:src="${item.product.imageUrl}" width="80"/></td>
+        <td th:text="${item.product.price}">0.00</td>
+        <td th:text="${item.quantity}">1</td>
+        <td th:text="${item.product.price * item.quantity}">Subtotal</td>
+        <td>
+            <form th:action="@{'/cart/remove/' + ${item.id}}" method="post">
+                <button type="submit">Remove</button>
+            </form>
+        </td>
+    </tr>
+</table>
+
+<div th:if="${cartItems.size() > 0}">
+    <h3>Total: ₹<span th:text="${total}">0</span></h3>
+    <a href="/checkout"><button>Proceed to Checkout</button></a>
+</div>
+
+</body>
+</html>

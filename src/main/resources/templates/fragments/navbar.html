@@ -1,0 +1,24 @@
+<!-- fragments/navbar.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:fragment="navbar">
+        <!-- ✅ Actual navbar content -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="/">ALLWIN I POWER SYSTEM</a>
+                <div>
+					<ul class="navbar-nav ml-auto">
+					  <li class="nav-item"><a class="nav-link" href="/" th:href="@{/}">Home</a></li>
+					  <li class="nav-item"><a class="nav-link" href="/products" th:href="@{/products}">Products</a></li>
+					  <li class="nav-item"><a class="nav-link" href="/service" th:href="@{/service}">Services</a></li>
+					  <li class="nav-item"><a class="nav-link" href="/contact" th:href="@{/contact}">Contact</a></li>
+					  <li class="nav-item"><a class="nav-link" href="/admin/login" th:href="@{/admin/login}">Admin</a></li>
+					</ul>
+
+                </div>
+            </div>
+        </nav>
+    </div>
+</body>
+</html>

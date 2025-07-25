@@ -1,0 +1,21 @@
+<!-- src/main/resources/templates/admin-dashboard.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Welcome, Admin</h1>
+
+        <div class="list-group w-50 mx-auto">
+            <a href="/enquiry" class="list-group-item list-group-item-action">View Enquiries</a>
+            <a href="/order" class="list-group-item list-group-item-action">View Orders</a>
+            <a href="/service" class="list-group-item list-group-item-action">View Service Requests</a>
+        </div>
+    </div>
+
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
