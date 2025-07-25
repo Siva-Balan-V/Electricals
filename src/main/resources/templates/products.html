@@ -20,23 +20,36 @@
     </style>
 </head>
 <body>
-    <div th:replace="fragments/header :: header"></div>
+    <div th:replace="fragments/navbar :: navbar"></div>
 
     <div class="container mt-5 mb-5">
         <h2 class="text-center mb-4">Our Products</h2>
+        
+        <!-- Show message if no products -->
+        <div th:if="${#lists.isEmpty(products)}" class="alert alert-info">
+            No products available at the moment.
+        </div>
 
-        <div class="row">
+        <div class="row" th:if="${not #lists.isEmpty(products)}">
             <div class="col-md-3 mb-4" th:each="product : ${products}">
                 <div class="card product-card">
-                    <!-- Defensive binding -->
-                    <img th:if="${product.imageUrl != null}" th:src="@{${product.imageUrl}}" class="card-img-top product-img" alt="Product Image">
-                    <img th:unless="${product.imageUrl != null}" src="/images/default.jpg" class="card-img-top product-img" alt="Default Image">
+                    <img th:if="${product.imageUrl != null}" th:src="@{${product.imageUrl}}" 
+                         class="card-img-top product-img" alt="Product Image">
+                    <img th:unless="${product.imageUrl != null}" 
+                         src="/images/default.jpg" class="card-img-top product-img" 
+                         alt="Default Image">
 
                     <div class="card-body d-flex flex-column">
-                        <h5 class="card-title" th:text="${product.name}">Product Name</h5>
-                        <p class="card-text" th:text="${product.description}">Description</p>
-                        <h6 class="card-text text-primary">₹ <span th:text="${product.price}">Price</span></h6>
-                        <a th:href="@{'/add-to-cart/' + ${product.id}}" class="btn btn-success mt-auto">Add to Cart</a>
+                        <h5 class="card-title" th:text="${product?.name}">Product Name</h5>
+                        <p class="card-text" th:text="${product?.description}">Description</p>
+                        <h6 class="card-text text-primary">₹ <span th:text="${product?.price}">Price</span></h6>
+                        <form th:action="@{/add-to-cart}" method="post" class="mt-auto">
+                            <input type="hidden" name="name" th:value="${product.name}">
+                            <input type="hidden" name="type" value="product">
+                            <input type="hidden" name="price" th:value="${product.price}">
+                            <input type="hidden" name="referenceId" th:value="${product.id}">
+                            <button type="submit" class="btn btn-success w-100">Add to Cart</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -44,5 +57,9 @@
     </div>
 
     <div th:replace="fragments/footer :: footer"></div>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

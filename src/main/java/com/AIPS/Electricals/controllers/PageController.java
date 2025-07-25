@@ -10,12 +10,17 @@ import com.AIPS.Electricals.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.transaction.Transactional;
+import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
+@Validated
 public class PageController {
 
     @Autowired
@@ -37,9 +42,16 @@ public class PageController {
 
     @GetMapping("/products")
     public String showProductsPage(Model model) {
-        List<Product> products = productRepository.findAll();
-        model.addAttribute("products", products);
-        return "products";
+        try {
+            List<Product> products = productRepository.findAll();
+            model.addAttribute("products", products);
+            return "products";
+        } catch (Exception e) {
+            // Log the error
+            e.printStackTrace();
+            model.addAttribute("error", "An error occurred while loading products.");
+            return "error";
+        }
     }
 
 
@@ -117,26 +129,41 @@ public class PageController {
     }
 
     // Handle order submission
+    @Transactional
     @PostMapping("/checkout")
-    public String checkout(@RequestParam String customerName,
+    public String checkout(@Valid @RequestParam String customerName,
                            @RequestParam String address,
                            @RequestParam String phone,
                            @RequestParam String email,
                            RedirectAttributes redirectAttributes) {
 
         List<CartItem> items = cartItemRepository.findAll();
-        double total = items.stream()
+        if (items.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Your cart is empty!");
+            return "redirect:/cart";
+        }
+
+        // Basic validation
+        if (customerName.trim().isEmpty() || address.trim().isEmpty() || email.trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Please fill in all required fields!");
+            return "redirect:/checkout";
+        }
+
+        double totalPrice = items.stream()
                 .mapToDouble(item -> item.getPrice() * item.getQuantity())
                 .sum();
 
-        Order order = new Order(customerName, address, email, totalPrice);
-        order.setItems(items); // Make sure Order.java has a List<CartItem> items field
-        orderRepository.save(order);
-
-        cartItemRepository.deleteAll(); // Clear cart after placing order
-
-        redirectAttributes.addFlashAttribute("success", "Your order has been placed successfully!");
-        return "redirect:/thank-you";
+        try {
+            Order order = new Order(customerName, address, email, totalPrice);
+            order.setItems(items);
+            orderRepository.save(order);
+            cartItemRepository.deleteAll(); // Clear cart after placing order
+            redirectAttributes.addFlashAttribute("success", "Your order has been placed successfully!");
+            return "redirect:/thank-you";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "An error occurred while processing your order. Please try again.");
+            return "redirect:/checkout";
+        }
     }
 
     // Thank you page
@@ -145,4 +172,3 @@ public class PageController {
         return "thank-you";
     }
 }
-	
