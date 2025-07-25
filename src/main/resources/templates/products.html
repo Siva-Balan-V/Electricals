@@ -3,6 +3,7 @@
 <head>
     <title>Products | ALLWIN I POWER SYSTEM</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         .product-card {
             margin-bottom: 20px;
@@ -17,6 +18,86 @@
             max-height: 200px;
             object-fit: cover;
         }
+        /* Floating Cart Icon Styles */
+        .floating-cart {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #28a745;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: transform 0.2s;
+        }
+        .floating-cart:hover {
+            transform: scale(1.1);
+        }
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+        }
+        /* Cart Modal Styles */
+        .cart-modal {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 350px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            z-index: 999;
+            display: none;
+        }
+        .cart-modal.show {
+            display: block;
+        }
+        .cart-header {
+            padding: 1rem;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .cart-body {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+        .cart-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .cart-item img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            margin-right: 1rem;
+        }
+        .cart-footer {
+            padding: 1rem;
+            border-top: 1px solid #dee2e6;
+        }
+        .remove-item {
+            color: #dc3545;
+            cursor: pointer;
+            margin-left: auto;
+        }
     </style>
 </head>
 <body>
@@ -25,7 +106,6 @@
     <div class="container mt-5 mb-5">
         <h2 class="text-center mb-4">Our Products</h2>
         
-        <!-- Show message if no products -->
         <div th:if="${#lists.isEmpty(products)}" class="alert alert-info">
             No products available at the moment.
         </div>
@@ -43,23 +123,136 @@
                         <h5 class="card-title" th:text="${product?.name}">Product Name</h5>
                         <p class="card-text" th:text="${product?.description}">Description</p>
                         <h6 class="card-text text-primary">₹ <span th:text="${product?.price}">Price</span></h6>
-                        <form th:action="@{/add-to-cart}" method="post" class="mt-auto">
-                            <input type="hidden" name="name" th:value="${product.name}">
-                            <input type="hidden" name="type" value="product">
-                            <input type="hidden" name="price" th:value="${product.price}">
-                            <input type="hidden" name="referenceId" th:value="${product.id}">
-                            <button type="submit" class="btn btn-success w-100">Add to Cart</button>
-                        </form>
+                        <button class="btn btn-success w-100 add-to-cart"
+                                th:data-id="${product.id}"
+                                th:data-name="${product.name}"
+                                th:data-price="${product.price}"
+                                th:data-image="${product.imageUrl}">
+                            Add to Cart
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Floating Cart Icon -->
+    <div class="floating-cart" id="cartIcon">
+        <i class="fas fa-shopping-cart fa-lg"></i>
+        <span class="cart-badge" id="cartCount">0</span>
+    </div>
+
+    <!-- Cart Modal -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-header">
+            <h5 class="mb-0">Shopping Cart</h5>
+            <button type="button" class="close" id="closeCart">
+                <span>&times;</span>
+            </button>
+        </div>
+        <div class="cart-body" id="cartItems">
+            <!-- Cart items will be dynamically added here -->
+        </div>
+        <div class="cart-footer">
+            <div class="d-flex justify-content-between mb-2">
+                <strong>Total:</strong>
+                <strong>₹<span id="cartTotal">0.00</span></strong>
+            </div>
+            <a href="/checkout" class="btn btn-success w-100">Proceed to Checkout</a>
+        </div>
+    </div>
+
     <div th:replace="fragments/footer :: footer"></div>
     
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            let cart = [];
+            
+            // Toggle cart modal
+            $('#cartIcon').click(function() {
+                $('#cartModal').toggleClass('show');
+            });
+
+            $('#closeCart').click(function() {
+                $('#cartModal').removeClass('show');
+            });
+
+            // Add to cart functionality
+            $('.add-to-cart').click(function() {
+                const button = $(this);
+                const product = {
+                    id: button.data('id'),
+                    name: button.data('name'),
+                    price: button.data('price'),
+                    image: button.data('image'),
+                    quantity: 1
+                };
+
+                // Add to cart array
+                const existingItem = cart.find(item => item.id === product.id);
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    cart.push(product);
+                }
+
+                // Update cart UI
+                updateCartUI();
+
+                // Send to server
+                $.ajax({
+                    url: '/add-to-cart',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(product),
+                    success: function(response) {
+                        showToast('Product added to cart!');
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error adding to cart:', error);
+                    }
+                });
+            });
+
+            function updateCartUI() {
+                const cartItems = $('#cartItems');
+                cartItems.empty();
+                let total = 0;
+
+                cart.forEach(item => {
+                    total += item.price * item.quantity;
+                    cartItems.append(`
+                        <div class="cart-item">
+                            <img src="${item.image || '/images/default.jpg'}" alt="${item.name}">
+                            <div>
+                                <h6 class="mb-0">${item.name}</h6>
+                                <small>₹${item.price} × ${item.quantity}</small>
+                            </div>
+                            <i class="fas fa-trash remove-item" data-id="${item.id}"></i>
+                        </div>
+                    `);
+                });
+
+                $('#cartCount').text(cart.reduce((sum, item) => sum + item.quantity, 0));
+                $('#cartTotal').text(total.toFixed(2));
+
+                // Add remove functionality
+                $('.remove-item').click(function() {
+                    const id = $(this).data('id');
+                    cart = cart.filter(item => item.id !== id);
+                    updateCartUI();
+                });
+            }
+
+            function showToast(message) {
+                // Implement a toast notification if desired
+                alert(message);
+            }
+        });
+    </script>
 </body>
 </html>
