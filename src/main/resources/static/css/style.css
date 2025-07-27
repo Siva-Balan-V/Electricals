@@ -71,3 +71,153 @@ input:focus, textarea:focus {
 .submit-btn:hover {
     background-color: #0056b3;
 }
+src\main\resources\static\css\style.css
+/* Checkout page specific styles */
+.card {
+    border-radius: 1rem;
+    border: none;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.form-label {
+    font-weight: 500;
+}
+
+.form-control {
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+}
+
+textarea.form-control {
+    resize: vertical;
+}
+
+.btn-primary {
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+.table td, .table th {
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+/* Services Preview Section */
+.services-preview {
+    background-color: #f8f9fa;
+}
+
+.service-card {
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+}
+
+.service-img-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 66.67%; /* 3:2 Aspect Ratio */
+    overflow: hidden;
+}
+
+.service-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.service-card:hover .service-img {
+    transform: scale(1.05);
+}
+
+.service-content {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.service-content h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 0.75rem;
+}
+
+.service-content p {
+    color: #6c757d;
+    margin-bottom: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    .table td, .table th {
+        padding: 0.75rem;
+    }
+}
+
+/* Responsive adjustments for services */
+@media (max-width: 991.98px) {
+    .row-cols-lg-4 > .col {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .row-cols-md-2 > .col {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    
+    .service-img-wrapper {
+        padding-top: 56.25%; /* 16:9 Aspect Ratio for mobile */
+    }
+    
+    .service-content {
+        padding: 1.25rem;
+    }
+}
